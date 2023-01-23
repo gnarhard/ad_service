@@ -1,0 +1,1 @@
+A service for managing Google Mobile Ads in a Flutter app.
