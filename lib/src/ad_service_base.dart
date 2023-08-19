@@ -1,6 +1,6 @@
 import 'dart:io' show Platform;
 
-import 'package:flutter/foundation.dart' show kDebugMode;
+import 'package:flutter/foundation.dart' show debugPrint, kDebugMode;
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class AdService {
@@ -31,14 +31,14 @@ class AdService {
         rewardedAdLoadCallback: RewardedAdLoadCallback(
           onAdLoaded: (RewardedAd ad) {
             if (kDebugMode) {
-              print('$ad loaded.');
+              debugPrint('$ad loaded.');
             }
             _rewardedAd = ad;
             _numRewardedLoadAttempts = 0;
           },
           onAdFailedToLoad: (LoadAdError error) {
             if (kDebugMode) {
-              print('RewardedAd failed to load: $error');
+              debugPrint('RewardedAd failed to load: $error');
             }
             _rewardedAd = null;
             _numRewardedLoadAttempts += 1;
@@ -57,12 +57,12 @@ class AdService {
     _rewardedAd!.fullScreenContentCallback = FullScreenContentCallback(
       onAdShowedFullScreenContent: (RewardedAd ad) {
         if (kDebugMode) {
-          print('onAdShowedFullScreenContent.');
+          debugPrint('onAdShowedFullScreenContent.');
         }
       },
       onAdDismissedFullScreenContent: (RewardedAd ad) {
         if (kDebugMode) {
-          print('onAdDismissedFullScreenContent.');
+          debugPrint('onAdDismissedFullScreenContent.');
         }
         ad.dispose();
         createRewardedAd();
@@ -70,7 +70,7 @@ class AdService {
       },
       onAdFailedToShowFullScreenContent: (RewardedAd ad, AdError error) {
         if (kDebugMode) {
-          print('onAdFailedToShowFullScreenContent: $error');
+          debugPrint('onAdFailedToShowFullScreenContent: $error');
         }
         ad.dispose();
         createRewardedAd();
@@ -81,7 +81,7 @@ class AdService {
     _rewardedAd!.show(
         onUserEarnedReward: (AdWithoutView ad, RewardItem reward) async {
       if (kDebugMode) {
-        print('Rewarded $RewardItem(${reward.amount}, ${reward.type})');
+        debugPrint('Rewarded $RewardItem(${reward.amount}, ${reward.type})');
       }
       await beforeRewardCallback();
     });
