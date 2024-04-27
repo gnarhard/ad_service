@@ -45,7 +45,7 @@ class AdService {
   }
 
   void showRewardedAd(Function rewardCallback, Function beforeRewardCallback,
-      Function errorMessageCallback) {
+      Function(String message) errorMessageCallback) {
     if (currentRewardedAd == null) {
       errorMessageCallback("No ad available.");
       return;
