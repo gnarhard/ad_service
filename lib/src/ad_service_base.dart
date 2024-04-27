@@ -1,6 +1,5 @@
 import 'dart:io' show Platform;
 
-import 'package:flutter/foundation.dart' show debugPrint, kDebugMode;
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class AdService {
@@ -10,6 +9,7 @@ class AdService {
   final Function beforeRewardCallback;
   final Function rewardCallback;
   final Function errorMessageCallback;
+  final bool isDebugMode;
 
   AdService({
     required this.androidAppId,
@@ -18,6 +18,7 @@ class AdService {
     required this.beforeRewardCallback,
     required this.rewardCallback,
     required this.errorMessageCallback,
+    this.isDebugMode = false,
   });
 
   RewardedAd? _rewardedAd;
@@ -30,15 +31,15 @@ class AdService {
         request: adRequest,
         rewardedAdLoadCallback: RewardedAdLoadCallback(
           onAdLoaded: (RewardedAd ad) {
-            if (kDebugMode) {
-              debugPrint('$ad loaded.');
+            if (isDebugMode) {
+              print('$ad loaded.');
             }
             _rewardedAd = ad;
             _numRewardedLoadAttempts = 0;
           },
           onAdFailedToLoad: (LoadAdError error) {
-            if (kDebugMode) {
-              debugPrint('RewardedAd failed to load: $error');
+            if (isDebugMode) {
+              print('RewardedAd failed to load: $error');
             }
             _rewardedAd = null;
             _numRewardedLoadAttempts += 1;
@@ -56,21 +57,21 @@ class AdService {
     }
     _rewardedAd!.fullScreenContentCallback = FullScreenContentCallback(
       onAdShowedFullScreenContent: (RewardedAd ad) {
-        if (kDebugMode) {
-          debugPrint('onAdShowedFullScreenContent.');
+        if (isDebugMode) {
+          print('onAdShowedFullScreenContent.');
         }
       },
       onAdDismissedFullScreenContent: (RewardedAd ad) {
-        if (kDebugMode) {
-          debugPrint('onAdDismissedFullScreenContent.');
+        if (isDebugMode) {
+          print('onAdDismissedFullScreenContent.');
         }
         ad.dispose();
         createRewardedAd();
         rewardCallback();
       },
       onAdFailedToShowFullScreenContent: (RewardedAd ad, AdError error) {
-        if (kDebugMode) {
-          debugPrint('onAdFailedToShowFullScreenContent: $error');
+        if (isDebugMode) {
+          print('onAdFailedToShowFullScreenContent: $error');
         }
         ad.dispose();
         createRewardedAd();
@@ -80,8 +81,8 @@ class AdService {
     _rewardedAd!.setImmersiveMode(true);
     _rewardedAd!.show(
         onUserEarnedReward: (AdWithoutView ad, RewardItem reward) async {
-      if (kDebugMode) {
-        debugPrint('Rewarded $RewardItem(${reward.amount}, ${reward.type})');
+      if (isDebugMode) {
+        print('Rewarded $RewardItem(${reward.amount}, ${reward.type})');
       }
       await beforeRewardCallback();
     });
