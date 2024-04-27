@@ -6,22 +6,16 @@ class AdService {
   final String androidAppId;
   final String iosAppId;
   final AdRequest adRequest;
-  final Function beforeRewardCallback;
-  final Function rewardCallback;
-  final Function errorMessageCallback;
   final bool isDebugMode;
 
   AdService({
     required this.androidAppId,
     required this.iosAppId,
     required this.adRequest,
-    required this.beforeRewardCallback,
-    required this.rewardCallback,
-    required this.errorMessageCallback,
     this.isDebugMode = false,
   });
 
-  RewardedAd? _rewardedAd;
+  RewardedAd? currentRewardedAd;
   int _numRewardedLoadAttempts = 0;
   static const int _maxFailedLoadAttempts = 3;
 
@@ -34,14 +28,14 @@ class AdService {
             if (isDebugMode) {
               print('$ad loaded.');
             }
-            _rewardedAd = ad;
+            currentRewardedAd = ad;
             _numRewardedLoadAttempts = 0;
           },
           onAdFailedToLoad: (LoadAdError error) {
             if (isDebugMode) {
               print('RewardedAd failed to load: $error');
             }
-            _rewardedAd = null;
+            currentRewardedAd = null;
             _numRewardedLoadAttempts += 1;
             if (_numRewardedLoadAttempts < _maxFailedLoadAttempts) {
               createRewardedAd();
@@ -50,12 +44,13 @@ class AdService {
         ));
   }
 
-  void showRewardedAd() {
-    if (_rewardedAd == null) {
+  void showRewardedAd(Function rewardCallback, Function beforeRewardCallback,
+      Function errorMessageCallback) {
+    if (currentRewardedAd == null) {
       errorMessageCallback("No ad available.");
       return;
     }
-    _rewardedAd!.fullScreenContentCallback = FullScreenContentCallback(
+    currentRewardedAd!.fullScreenContentCallback = FullScreenContentCallback(
       onAdShowedFullScreenContent: (RewardedAd ad) {
         if (isDebugMode) {
           print('onAdShowedFullScreenContent.');
@@ -78,18 +73,14 @@ class AdService {
       },
     );
 
-    _rewardedAd!.setImmersiveMode(true);
-    _rewardedAd!.show(
+    currentRewardedAd!.setImmersiveMode(true);
+    currentRewardedAd!.show(
         onUserEarnedReward: (AdWithoutView ad, RewardItem reward) async {
       if (isDebugMode) {
         print('Rewarded $RewardItem(${reward.amount}, ${reward.type})');
       }
       await beforeRewardCallback();
     });
-    _rewardedAd = null;
-  }
-
-  void showError(String message) {
-    errorMessageCallback(message);
+    currentRewardedAd = null;
   }
 }
