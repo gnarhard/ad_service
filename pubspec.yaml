@@ -1,6 +1,6 @@
 name: ad_service
 description: A service for managing Google Mobile Ads in a Flutter app.
-version: 1.0.1
+version: 1.0.2
 
 environment:
   sdk: '>=3.3.0 <4.0.0'
