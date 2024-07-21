@@ -19,29 +19,31 @@ class AdService {
   int _numRewardedLoadAttempts = 0;
   static const int _maxFailedLoadAttempts = 3;
 
-  Future<void> createRewardedAd() async {
+  Future<void> createRewardedAd(void Function() showCallback) async {
     await RewardedAd.load(
-        adUnitId: Platform.isAndroid ? androidAppId : iosAppId,
-        request: adRequest,
-        rewardedAdLoadCallback: RewardedAdLoadCallback(
-          onAdLoaded: (RewardedAd ad) {
-            if (isDebugMode) {
-              print('$ad loaded.');
-            }
-            currentRewardedAd = ad;
-            _numRewardedLoadAttempts = 0;
-          },
-          onAdFailedToLoad: (LoadAdError error) {
-            if (isDebugMode) {
-              print('RewardedAd failed to load: $error');
-            }
-            currentRewardedAd = null;
-            _numRewardedLoadAttempts += 1;
-            if (_numRewardedLoadAttempts < _maxFailedLoadAttempts) {
-              createRewardedAd();
-            }
-          },
-        ));
+      adUnitId: Platform.isAndroid ? androidAppId : iosAppId,
+      request: adRequest,
+      rewardedAdLoadCallback: RewardedAdLoadCallback(
+        onAdLoaded: (RewardedAd ad) {
+          if (isDebugMode) {
+            print('$ad loaded.');
+          }
+          currentRewardedAd = ad;
+          _numRewardedLoadAttempts = 0;
+          showCallback();
+        },
+        onAdFailedToLoad: (LoadAdError error) {
+          if (isDebugMode) {
+            print('RewardedAd failed to load: $error');
+          }
+          currentRewardedAd = null;
+          _numRewardedLoadAttempts += 1;
+          if (_numRewardedLoadAttempts < _maxFailedLoadAttempts) {
+            createRewardedAd();
+          }
+        },
+      ),
+    );
   }
 
   void showRewardedAd(Function rewardCallback, Function beforeRewardCallback,
