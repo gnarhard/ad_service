@@ -39,7 +39,7 @@ class AdService {
           currentRewardedAd = null;
           _numRewardedLoadAttempts += 1;
           if (_numRewardedLoadAttempts < _maxFailedLoadAttempts) {
-            createRewardedAd();
+            createRewardedAd(showCallback);
           }
         },
       ),
