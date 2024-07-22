@@ -63,7 +63,7 @@ class AdService {
           print('onAdDismissedFullScreenContent.');
         }
         ad.dispose();
-        createRewardedAd();
+        // createRewardedAd();
         rewardCallback();
       },
       onAdFailedToShowFullScreenContent: (RewardedAd ad, AdError error) {
@@ -71,7 +71,7 @@ class AdService {
           print('onAdFailedToShowFullScreenContent: $error');
         }
         ad.dispose();
-        createRewardedAd();
+        // createRewardedAd();
       },
     );
 
